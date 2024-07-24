@@ -1,23 +1,27 @@
 import traceback
+from doctest import UnexpectedException
 from typing import List
+
+from bullet import Bullet, colors, utils
 
 
 class PurchaseItem(object):
+
     def __init__(self, option):
         self.price = option.p
         self.name = str(option)
 
 
-def get_total_order_amount(order: List[PurchaseItem]) -> float:
+def get_total_order_amount(order: List[PurchaseItem]):
     """
     The total cost of all the items ordered
     """
     return sum(item.price for item in order)
 
 
-def get_service_charge(order: List[PurchaseItem]) -> float:
+def get_service_charge(order: List[PurchaseItem]):
     """
-    For every Rs. 100, the service charge amount should increase by 1% of order amount, up to a max of 20%
+    For every Rs. 100, the service charge amount should increase by 1% of order amount, upto a max of 20%
     Eg:
         Order Amount = 80, Service Charge = 0
         Order Amount = 150, Service Charge = 1.5
@@ -26,12 +30,12 @@ def get_service_charge(order: List[PurchaseItem]) -> float:
         Order Amount = 3000, Service Charge = 600
     """
     total_amount = get_total_order_amount(order)
-    charge_percentage = min(20, (total_amount // 100))
-    service_charge = total_amount * (charge_percentage / 100)
-    return service_charge
+    service_charge_percentage = min(total_amount // 100, 20)
+    return total_amount * (service_charge_percentage / 100)
 
 
 class Option(object):
+
     def __init__(self, n=None, pu=None, p=None, d=None):
         self.p = p
         self.n = n
@@ -53,21 +57,57 @@ class Option(object):
 
 
 MCDONALDS_FOOD_OPTIONS = [
-    Option(d={"name": "Veg Burger", "price": 115.00}),
-    Option(d={"name": "Veg Wrap", "price": 130.00}),
-    Option(d={"name": "Veg Happy Meal", "price": 215.00}),
-    Option(d={"name": "Chicken Burger", "price": 175.00}),
-    Option(d={"name": "Chicken Wrap", "price": 195.00}),
-    Option(d={"name": "No, that's all", "price": 0.00}),
+    Option(d={
+        "name": "Veg Burger",
+        "price": 115.00
+    }),
+    Option(d={
+        "name": "Veg Wrap",
+        "price": 130.00
+    }),
+    Option(d={
+        "name": "Veg Happy Meal",
+        "price": 215.00
+    }),
+    Option(d={
+        "name": "Chicken Burger",
+        "price": 175.00
+    }),
+    Option(d={
+        "name": "Chicken Wrap",
+        "price": 195.00
+    }),
+    Option(d={
+        "name": "No, that's all",
+        "price": 0.00
+    }),
 ]
 
 MCDONALDS_BEVERAGES_OPTIONS = [
-    Option(d={"name": "Sprite (M)", "price": 115.00}),
-    Option(d={"name": "Sprite (L)", "price": 130.00}),
-    Option(d={"name": "Mango Smoothie", "price": 215.00}),
-    Option(d={"name": "Chocolate Smoothie", "price": 175.00}),
-    Option(d={"name": "Chocolate Smoothie w/ Icecream", "price": 195.00}),
-    Option(d={"name": "No, that's all", "price": 0.00}),
+    Option(d={
+        "name": "Sprite (M)",
+        "price": 115.00
+    }),
+    Option(d={
+        "name": "Sprite (L)",
+        "price": 130.00
+    }),
+    Option(d={
+        "name": "Mango Smoothie",
+        "price": 215.00
+    }),
+    Option(d={
+        "name": "Chocolate Smoothie",
+        "price": 175.00
+    }),
+    Option(d={
+        "name": "Chocolate Smoothie w/ Icecream",
+        "price": 195.00
+    }),
+    Option(d={
+        "name": "No, that's all",
+        "price": 0.00
+    }),
 ]
 
 
@@ -75,7 +115,8 @@ def get_option_from_result(result, options):
     for option in options:
         if str(option) == result:
             return option
-    raise Exception("Option not found")
+
+    raise UnexpectedException
 
 
 def print_order(order):
@@ -95,44 +136,78 @@ def print_order(order):
             traceback.print_exc()
             service_charge = "ERROR"
 
-    print("Final Order")
+    utils.cprint("Final Order",
+                 color=colors.foreground["green"],
+                 on=colors.background["yellow"])
     for i, item in enumerate(order):
-        print(f"{i+1}. {item.name}")
+        utils.cprint(
+            f"{i+1}. {item.name}",
+            color=colors.foreground["yellow"],
+            on=colors.background["green"],
+        )
 
-    print(f"Order Amount: {str(total_amount)}")
-    print(f"Service Charge: {str(service_charge)}")
-    print(f"Final Amount: {str(total_amount + service_charge) if isinstance(total_amount, (int, float)) and isinstance(service_charge, (int, float)) else 'ERROR'}")
+    utils.cprint(
+        f"Order Amount: {str(total_amount)}",
+        color=colors.foreground["green"],
+        on=colors.background["yellow"],
+    )
+    utils.cprint(
+        f"Service Charge: {str(service_charge)}",
+        color=colors.foreground["green"],
+        on=colors.background["yellow"],
+    )
+    utils.cprint(
+        f"Final Amount: {str(total_amount + service_charge) if isinstance(total_amount, (int, float)) and isinstance(service_charge, (int, float)) else 'ERROR'}",
+        color=colors.foreground["green"],
+        on=colors.background["yellow"],
+    )
 
 
-print("Welcome to McDonalds on your shell :)")
-print("Here you can place your order")
-print("And then we will show you your bill")
+print()
+utils.cprint(
+    "Welcome to McDonalds on your shell :)",
+    color=colors.foreground["blue"],
+    on=colors.background["white"],
+)
+utils.cprint(
+    "Here you can place your order        ",
+    color=colors.foreground["blue"],
+    on=colors.background["white"],
+)
+utils.cprint(
+    "And then we will show you your bill  ",
+    color=colors.foreground["blue"],
+    on=colors.background["white"],
+)
 print()
 order = []
 while True:
     options = list(map(lambda x: str(x), MCDONALDS_FOOD_OPTIONS))
-    print("Add an item:")
-    for i, option in enumerate(options):
-        print(f"{i + 1}. {option}")
-    choice = int(input("Enter choice number: ")) - 1
-    result = options[choice]
+    bullet = Bullet(prompt="Add an item", choices=options, bullet="=> ")
+    result = bullet.launch()
+    utils.clearConsoleUp(7)
     option = get_option_from_result(result, MCDONALDS_FOOD_OPTIONS)
     if result == str(MCDONALDS_FOOD_OPTIONS[-1]):
         break
     order.append(PurchaseItem(option))
-    print(f"{result} is added to your order")
+    utils.cprint(f"{result} is added to your order",
+                 on=colors.background["green"],
+                 end="\n")
 
 while True:
     options = list(map(lambda x: str(x), MCDONALDS_BEVERAGES_OPTIONS))
-    print("Add a beverage:")
-    for i, option in enumerate(options):
-        print(f"{i + 1}. {option}")
-    choice = int(input("Enter choice number: ")) #- 1
-    result = options[choice]
+    bullet = Bullet(prompt="Add a beverage", choices=options, bullet="=> ")
+    result = bullet.launch()
+    utils.clearConsoleUp(7)
     option = get_option_from_result(result, MCDONALDS_BEVERAGES_OPTIONS)
     if result == str(MCDONALDS_BEVERAGES_OPTIONS[-1]):
         break
     order.append(PurchaseItem(option))
-    print(f"{result} is added to your order")
+    utils.cprint(f"{result} is added to your order",
+                 on=colors.background["green"],
+                 end="\n")
+
+utils.clearConsoleUp(1)
+print()
 
 print_order(order)
